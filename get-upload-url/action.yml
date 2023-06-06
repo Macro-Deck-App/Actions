@@ -1,10 +1,6 @@
 name: Create Tag And Release
 description: "Action for creating a tag and release on GitHub with auto generated release notes"
 inputs:
-  github-token:
-    required: true
-  is-beta:
-    required: true
   version:
     required: true
 outputs:
@@ -20,10 +16,5 @@ runs:
       with:
         github-token: "${{ inputs.github-token }}"
         script: |
-            const response = await github.request('POST /repos/${{github.repository}}/releases', {
-              name: "${{ inputs.version }}",
-              tag_name: "v${{ inputs.version }}",
-              generate_release_notes: true,
-              prerelease: ${{ inputs.is-beta == 'true'}}
-            });
+            const response = await github.request('GET /repos/${{github.repository}}/releases/tags/v${{inputs.version}}');
             return response.data.upload_url;
