@@ -1,5 +1,5 @@
-name: Create Tag And Release
-description: "Action for creating a tag and release on GitHub with auto generated release notes"
+name: Get Upload URL
+description: "Action for getting the upload url for a GitHub release"
 inputs:
   version:
     required: true
