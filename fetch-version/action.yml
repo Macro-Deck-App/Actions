@@ -1,4 +1,5 @@
 name: Fetch Version To Release
+description: "Action for fetching the next version from the update API based on the release type"
 inputs:
   release-type:
     required: true

@@ -1,0 +1,16 @@
+name: Validate Version
+inputs:
+  version:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        RESULT=$(curl -s "https://update.api.macro-deck.app/versionname/validate/${{ inputs.version }}")
+
+        if [[ "$RESULT" != "true" ]]; then
+          echo "Version '${{ inputs.version }}' is not valid according to the update API."
+          exit 1
+        fi
