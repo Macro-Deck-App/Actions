@@ -1,4 +1,5 @@
 name: Validate Version
+description: "Action to validate a version using the update API"
 inputs:
   version:
     required: true
