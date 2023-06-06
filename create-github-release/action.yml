@@ -7,6 +7,9 @@ inputs:
     required: true
   version:
     required: true
+outputs:
+  upload_url:
+    description: "The URL for uploading assets to the release"
 
 runs:
   using: "composite"
@@ -15,9 +18,11 @@ runs:
       with:
         github-token: "${{ inputs.github-token }}"
         script: |
-            await github.request('POST /repos/${{github.repository}}/releases', {
+            const response = await github.request('POST /repos/${{github.repository}}/releases', {
               name: "${{ inputs.version }}",
               tag_name: "v${{ inputs.version }}",
               generate_release_notes: true,
               prerelease: ${{ inputs.is-beta == 'true'}}
             });
+
+            return response.data.upload_url;
