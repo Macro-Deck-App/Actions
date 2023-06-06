@@ -8,7 +8,7 @@ inputs:
   version:
     required: true
 outputs:
-  upload_url:
+  upload-url:
     value: ${{ steps.create_release.outputs.result }}
     description: "The URL for uploading assets to the release"
 
