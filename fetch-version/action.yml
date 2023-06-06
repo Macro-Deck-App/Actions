@@ -8,7 +8,7 @@ outputs:
     value: ${{ steps.fetch_version.outputs.version }}
   is-beta:
     description: "Is it a beta version?"
-    value: ${{ steps.fetch_version.outputs.isBeta }}
+    value: ${{ steps.fetch_version.outputs.is-beta }}
 
 runs:
   using: "composite"
