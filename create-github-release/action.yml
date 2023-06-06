@@ -1,7 +1,7 @@
 name: Create Tag And Release
 description: "Action for creating a tag and release on GitHub with auto generated release notes"
 inputs:
-  github_key:
+  github-token:
     required: true
   isBeta:
     required: true
@@ -13,7 +13,7 @@ uns:
   steps:
     - uses: "actions/github-script@v6.4.1"
         with:
-          github-token: "${{ inputs.github_key }}"
+          github-token: "${{ inputs.github-token }}"
           script: |
             await github.request('POST /repos/${{github.repository}}/releases', {
               name: "${{ inputs.version }}",
