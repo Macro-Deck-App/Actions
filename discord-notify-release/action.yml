@@ -12,13 +12,13 @@ runs:
   using: "composite"
   steps:
     - name: "Notify Release"
-      if: ${{ github.event.inputs.isBeta == false }}
+      if: ${{ inputs.isBeta == 'false' }}
       continue-on-error: true
       shell: bash
       run: |
           curl -X POST \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ github.event.inputs.webhook_key }}" \
+            -H "Authorization: Bearer ${{ inputs.webhook_key }}" \
             -d '{
               "toEveryone": false,
               "embed": {
@@ -27,7 +27,7 @@ runs:
                   "g": 1,
                   "b": 0
                 },
-                "description": "**${{ github.event.inputs.version }} is now released!**",
+                "description": "**${{ inputs.version }} is now released!**",
                 "fields": [
                   {
                     "name": "Channel",
@@ -36,7 +36,7 @@ runs:
                   },
                   {
                     "name": "Changelog",
-                    "value": "https://github.com/Macro-Deck-App/Macro-Deck/releases/tag/v${{ github.event.inputs.version }}",
+                    "value": "https://github.com/Macro-Deck-App/Macro-Deck/releases/tag/v${{ inputs.version }}",
                     "inline": false
                   }
                 ]
@@ -45,13 +45,13 @@ runs:
             https://bot.api.macro-deck.app/webhook/macro-deck-release
 
     - name: "Notify Beta Release"
-      if: ${{ github.event.inputs.isBeta == true }}
+      if: ${{ inputs.isBeta == 'true' }}
       continue-on-error: true
       shell: bash
       run: |
           curl -X POST \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ github.event.inputs.webhook_key }}" \
+            -H "Authorization: Bearer ${{ inputs.webhook_key }}" \
             -d '{
               "toEveryone": false,
               "embed": {
@@ -60,7 +60,7 @@ runs:
                   "g": 1,
                   "b": 0
                 },
-                "description": "**Beta ${{ github.event.inputs.version }} is now released!**",
+                "description": "**Beta ${{ inputs.version }} is now released!**",
                 "fields": [
                   {
                     "name": "Channel",
@@ -69,7 +69,7 @@ runs:
                   },
                   {
                     "name": "Changelog",
-                    "value": "https://github.com/Macro-Deck-App/Macro-Deck/releases/tag/v${{ github.event.inputs.version }}",
+                    "value": "https://github.com/Macro-Deck-App/Macro-Deck/releases/tag/v${{ inputs.version }}",
                     "inline": false
                   }
                 ]
