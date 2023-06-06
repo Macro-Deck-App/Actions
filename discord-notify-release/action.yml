@@ -1,12 +1,12 @@
 name: Discord Notify Release
 description: "Action for notifying a new release on the Discord server using Macro-Bot"
-  inputs:
-    webhook_key:
-      required: true
-    isBeta:
-      required: true
-    version:
-      required: true
+inputs:
+  webhook_key:
+    required: true
+  isBeta:
+    required: true
+  version:
+    required: true
 
 runs:
   using: "composite"
