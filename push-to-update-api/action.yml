@@ -25,8 +25,8 @@ runs:
         -H 'x-admin-token: ${{ inputs.update-service-token }}'
         -H 'Content-Type: application/json'
         -d '{
-        "fileName": ${{ inputs.file-name }},
+        "fileName": "${{ inputs.file-name }}",
         "fileProvider": "GitHub",
-        "fileHash": ${{ inputs.file-hash }},
+        "fileHash": "${{ inputs.file-hash }}",
         "fileSize": ${{ inputs.file-size }}
         }'
