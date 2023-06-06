@@ -3,6 +3,8 @@ description: "Action for creating a tag and release on GitHub with auto generate
 inputs:
   version:
     required: true
+  github-token:
+    required: true
 outputs:
   upload-url:
     value: ${{ steps.create_release.outputs.result }}
