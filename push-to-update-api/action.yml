@@ -20,7 +20,7 @@ runs:
     - shell: bash
       id: fetch_version
       run: >
-            curl -X 'POST' \
+            curl -X 'POST'
               'https://update.api.macro-deck.app/files/${{ inputs.version }}/${{ inputs.platform }}'
               -H 'accept: */*'
               -H 'x-admin-token: ${{ inputs.update-service-token }}'
