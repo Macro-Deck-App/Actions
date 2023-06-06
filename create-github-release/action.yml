@@ -8,13 +8,13 @@ inputs:
   version:
     required: true
 
-uns:
+runs:
   using: "composite"
   steps:
     - uses: "actions/github-script@v6.4.1"
-        with:
-          github-token: "${{ inputs.github-token }}"
-          script: |
+      with:
+        github-token: "${{ inputs.github-token }}"
+        script: |
             await github.request('POST /repos/${{github.repository}}/releases', {
               name: "${{ inputs.version }}",
               tag_name: "v${{ inputs.version }}",
