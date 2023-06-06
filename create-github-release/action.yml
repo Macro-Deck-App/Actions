@@ -9,12 +9,14 @@ inputs:
     required: true
 outputs:
   upload_url:
+    value: ${{ steps.create_release.outputs.upload_url }}
     description: "The URL for uploading assets to the release"
 
 runs:
   using: "composite"
   steps:
     - uses: "actions/github-script@v6.4.1"
+      id: create_release
       with:
         github-token: "${{ inputs.github-token }}"
         script: |
@@ -25,4 +27,7 @@ runs:
               prerelease: ${{ inputs.is-beta == 'true'}}
             });
 
-            return response.data.upload_url;
+            let upload_url = response.data.upload_url;
+
+            console.log(upload_url);
+            return upload_url;
