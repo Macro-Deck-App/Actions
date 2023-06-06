@@ -1,0 +1,79 @@
+name: Discord Notify Release
+description: "Action for notifying a new release on the Discord server using Macro-Bot"
+  inputs:
+    webhook_key:
+      required: true
+    isBeta:
+      required: true
+    version:
+      required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Notify Release"
+      if: ${{ github.event.inputs.isBeta == 'false' }}
+      continue-on-error: true
+      shell: bash
+      run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ github.event.inputs.webhook_key }}" \
+            -d '{
+              "toEveryone": false,
+              "embed": {
+                "color": {
+                  "r": 0,
+                  "g": 1,
+                  "b": 0
+                },
+                "description": "**${{ github.event.inputs.version }} is now released!**",
+                "fields": [
+                  {
+                    "name": "Channel",
+                    "value": "Release",
+                    "inline": false
+                  },
+                  {
+                    "name": "Changelog",
+                    "value": "https://github.com/Macro-Deck-App/Macro-Deck/releases/tag/v${{ github.event.inputs.version }}",
+                    "inline": false
+                  }
+                ]
+              }
+            }' \
+            https://bot.api.macro-deck.app/webhook/macro-deck-release
+
+    - name: "Notify Beta Release"
+      if: ${{ github.event.inputs.isBeta == 'true' }}
+      uses: fjogeleit/http-request-action@v1
+      continue-on-error: true
+      shell: bash
+      run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ github.event.inputs.webhook_key }}" \
+            -d '{
+              "toEveryone": false,
+              "embed": {
+                "color": {
+                  "r": 0,
+                  "g": 1,
+                  "b": 0
+                },
+                "description": "**Beta ${{ github.event.inputs.version }} is now released!**",
+                "fields": [
+                  {
+                    "name": "Channel",
+                    "value": "Beta",
+                    "inline": false
+                  },
+                  {
+                    "name": "Changelog",
+                    "value": "https://github.com/Macro-Deck-App/Macro-Deck/releases/tag/v${{ github.event.inputs.version }}",
+                    "inline": false
+                  }
+                ]
+              }
+            }' \
+            https://bot.api.macro-deck.app/webhook/macro-deck-beta-release
