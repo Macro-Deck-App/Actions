@@ -27,7 +27,7 @@ runs:
                   "g": 1,
                   "b": 0
                 },
-                "description": "**${{ inputs.version }} is now released!**",
+                "description": "**${{ inputs.version }} is now released! 🚀**",
                 "fields": [
                   {
                     "name": "Channel",
@@ -56,11 +56,11 @@ runs:
               "toEveryone": false,
               "embed": {
                 "color": {
-                  "r": 0,
+                  "r": 1,
                   "g": 1,
                   "b": 0
                 },
-                "description": "**Beta ${{ inputs.version }} is now released!**",
+                "description": "**Beta ${{ inputs.version }} is now released! 🚀**",
                 "fields": [
                   {
                     "name": "Channel",
