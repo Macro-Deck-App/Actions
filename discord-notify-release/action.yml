@@ -1,9 +1,9 @@
 name: Discord Notify Release
 description: "Action for notifying a new release on the Discord server using Macro-Bot"
 inputs:
-  webhook_key:
+  webhook-token:
     required: true
-  isBeta:
+  is-beta:
     required: true
   version:
     required: true
@@ -11,14 +11,13 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: "Notify Release"
-      if: ${{ inputs.isBeta == 'false' }}
+    - if: ${{ inputs.is-beta == 'false' }}
       continue-on-error: true
       shell: bash
       run: |
           curl -X POST \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ inputs.webhook_key }}" \
+            -H "Authorization: Bearer ${{ inputs.webhook-token }}" \
             -d '{
               "toEveryone": false,
               "embed": {
@@ -44,14 +43,13 @@ runs:
             }' \
             https://bot.api.macro-deck.app/webhook/macro-deck-release
 
-    - name: "Notify Beta Release"
-      if: ${{ inputs.isBeta == 'true' }}
+    - if: ${{ inputs.is-beta == 'true' }}
       continue-on-error: true
       shell: bash
       run: |
           curl -X POST \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ inputs.webhook_key }}" \
+            -H "Authorization: Bearer ${{ inputs.webhook-token }}" \
             -d '{
               "toEveryone": false,
               "embed": {

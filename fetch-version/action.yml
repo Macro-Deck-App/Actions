@@ -1,12 +1,12 @@
 name: Fetch Version To Release
 inputs:
-  releaseType:
+  release-type:
     required: true
 outputs:
   version:
     description: "Next version from the API"
     value: ${{ steps.fetch_version.outputs.version }}
-  isBeta:
+  is-beta:
     description: "Is it a beta version?"
     value: ${{ steps.fetch_version.outputs.isBeta }}
 
@@ -16,7 +16,7 @@ runs:
     - shell: bash
       id: fetch_version
       run: |
-          RELEASE_TYPE=${{ github.event.inputs.releaseType }}
+          RELEASE_TYPE=${{ inputs.release-type }}
           BASE_URL="https://update.api.macro-deck.app/versionname/next"
 
           case "${RELEASE_TYPE}" in
@@ -40,11 +40,11 @@ runs:
               exit 1
               ;;
           esac
-          
+
           RESPONSE=$(curl -s $URL)
 
           VERSION_NAME=$(echo $RESPONSE | jq -r '.versionName')
           echo "version=${VERSION_NAME}" >> $GITHUB_OUTPUT
 
           IS_BETA=$(echo $RESPONSE | jq -r '.isBetaVersion')
-          echo "isBeta=${IS_BETA}" >> $GITHUB_OUTPUT
+          echo "is-beta=${IS_BETA}" >> $GITHUB_OUTPUT

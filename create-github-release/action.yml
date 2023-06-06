@@ -3,7 +3,7 @@ description: "Action for creating a tag and release on GitHub with auto generate
 inputs:
   github-token:
     required: true
-  isBeta:
+  is-beta:
     required: true
   version:
     required: true
@@ -19,5 +19,5 @@ runs:
               name: "${{ inputs.version }}",
               tag_name: "v${{ inputs.version }}",
               generate_release_notes: true,
-              prerelease: ${{ inputs.isBeta == 'true'}}
+              prerelease: ${{ inputs.is-beta == 'true'}}
             });
