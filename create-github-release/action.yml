@@ -7,6 +7,8 @@ inputs:
     required: true
   version:
     required: true
+  target-commitish:
+    required: true
 outputs:
   upload-url:
     value: ${{ steps.create_release.outputs.result }}
@@ -24,6 +26,7 @@ runs:
               name: "${{ inputs.version }}",
               tag_name: "v${{ inputs.version }}",
               generate_release_notes: true,
-              prerelease: ${{ inputs.is-beta == 'true'}}
+              prerelease: ${{ inputs.is-beta == 'true'}},
+              target_commitish: ${{ inputs.target-commitish }}
             });
             return response.data.upload_url;
