@@ -27,6 +27,6 @@ runs:
               tag_name: "v${{ inputs.version }}",
               generate_release_notes: true,
               prerelease: ${{ inputs.is-beta == 'true'}},
-              target_commitish: ${{ inputs.target-commitish }}
+              target_commitish: "${{ inputs.target-commitish }}"
             });
             return response.data.upload_url;
