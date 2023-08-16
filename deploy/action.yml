@@ -1,5 +1,5 @@
-name: Deploy Production
-description: "Action for deploying a service on the production system"
+name: Deploy
+description: "Action for deploying a service"
 inputs:
   host:
     type: string
