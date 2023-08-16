@@ -28,14 +28,12 @@ runs:
       run: |
         mkdir -p ~/.ssh/
         echo "$SSH_KEY" > ~/.ssh/private.key
-        chmod 600 ~/.ssh/private.key
-        echo "$SSH_KNOWN_HOSTS" > /etc/ssh/ssh_known_hosts2
+        echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
         cat >>~/.ssh/config <<END
         Host server
           HostName $SSH_HOST
           User $SSH_USER
           IdentityFile ~/.ssh/private.key
-          UserKnownHostsFile /etc/ssh/ssh_known_hosts2
         END
       env:
         SSH_USER: ${{ inputs.user }}
