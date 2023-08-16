@@ -27,11 +27,10 @@ runs:
       shell: bash
       run: |
         mkdir -p ~/.ssh/
-        rm -f ~/.ssh/known_hosts
         echo "$SSH_KEY" > ~/.ssh/private.key
         chmod 600 ~/.ssh/private.key
-        echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-        chmod 600 ~/.ssh/known_hosts
+        echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts2
+        chmod 600 ~/.ssh/known_hosts2
         cat >>~/.ssh/config <<END
         Host server
           HostName $SSH_HOST
