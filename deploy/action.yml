@@ -23,15 +23,16 @@ runs:
     - name: Configure SSH
       shell: bash
       run: |
-        mkdir -p ~/.ssh/
+        mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
         echo "$SSH_KEY" > ~/.ssh/server.key
+        ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
         chmod 600 ~/.ssh/server.key
+        chmod 600 ~/.ssh/known_hosts
         cat >>~/.ssh/config <<END
         Host server
           HostName $SSH_HOST
           User $SSH_USER
           IdentityFile ~/.ssh/server.key
-          StrictHostKeyChecking no
         END
       env:
         SSH_USER: ${{ inputs.user }}
