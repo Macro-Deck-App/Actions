@@ -29,8 +29,6 @@ runs:
         mkdir -p ~/.ssh/
         echo "$SSH_KEY" > ~/.ssh/private.key
         chmod 600 ~/.ssh/private.key
-        echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts2
-        chmod 600 ~/.ssh/known_hosts2
         cat >>~/.ssh/config <<END
         Host server
           HostName $SSH_HOST
@@ -41,8 +39,7 @@ runs:
         SSH_USER: ${{ inputs.user }}
         SSH_KEY: ${{ inputs.key }}
         SSH_HOST: ${{ inputs.host }}
-        SSH_KNOWN_HOSTS: ${{ inputs.known-hosts }}
 
     - name: Execute deploy script
       shell: bash
-      run: ssh -v server './deploy-service.sh ${{ inputs.service }} ${{ inputs.sha }}'
+      run: ssh -v -o StrictHostKeyChecking=no server './deploy-service.sh ${{ inputs.service }} ${{ inputs.sha }}'
