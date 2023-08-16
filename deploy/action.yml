@@ -36,4 +36,4 @@ runs:
 
     - name: Execute deploy script
       shell: bash
-      run: ssh ${{ inputs.user }}@${{ inputs.host }} './deploy-service.sh ${{ inputs.service }} ${{ inputs.sha }}'
+      run: ssh -i ~/.ssh/server.key ${{ inputs.user }}@${{ inputs.host }} './deploy-service.sh ${{ inputs.service }} ${{ inputs.sha }}'
