@@ -4,6 +4,9 @@ inputs:
   host:
     type: string
     required: true
+  known-hosts:
+    type: string
+    required: true
   user:
     type: string
     required: true
@@ -25,15 +28,22 @@ runs:
       run: |
         mkdir -p ~/.ssh/
         rm -f ~/.ssh/known_hosts
-        echo "$SSH_KEY" > ~/.ssh/server.key
-        chmod 600 ~/.ssh/server.key
-        ssh-keyscan -t rsa -H $SSH_HOST >> ~/.ssh/known_hosts
+        echo "$SSH_KEY" > ~/.ssh/private.key
+        chmod 600 ~/.ssh/private.key
+        echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
         chmod 600 ~/.ssh/known_hosts
+        cat >>~/.ssh/config <<END
+        Host server
+          HostName $SSH_HOST
+          User $SSH_USER
+          IdentityFile ~/.ssh/private.key
+        END
       env:
         SSH_USER: ${{ inputs.user }}
         SSH_KEY: ${{ inputs.key }}
         SSH_HOST: ${{ inputs.host }}
+        SSH_KNOWN_HOSTS: ${{ inputs.known-hosts }}
 
     - name: Execute deploy script
       shell: bash
-      run: ssh -i ~/.ssh/server.key ${{ inputs.user }}@${{ inputs.host }} './deploy-service.sh ${{ inputs.service }} ${{ inputs.sha }}'
+      run: ssh server './deploy-service.sh ${{ inputs.service }} ${{ inputs.sha }}'
