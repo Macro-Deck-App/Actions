@@ -37,6 +37,7 @@ runs:
           HostName $SSH_HOST
           User $SSH_USER
           IdentityFile ~/.ssh/private.key
+          UserKnownHostsFile ~/.ssh/known_hosts
         END
       env:
         SSH_USER: ${{ inputs.user }}
@@ -46,4 +47,4 @@ runs:
 
     - name: Execute deploy script
       shell: bash
-      run: ssh server './deploy-service.sh ${{ inputs.service }} ${{ inputs.sha }}'
+      run: ssh -v server './deploy-service.sh ${{ inputs.service }} ${{ inputs.sha }}'
