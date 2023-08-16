@@ -29,6 +29,7 @@ runs:
         mkdir -p ~/.ssh/
         echo "$SSH_KEY" > ~/.ssh/private.key
         echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        chmod 600 ~/.ssh/known_hosts
         cat >>~/.ssh/config <<END
         Host server
           HostName $SSH_HOST
