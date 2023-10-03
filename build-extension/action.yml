@@ -65,8 +65,8 @@ runs:
   - name: Checkout Macro Deck Repository
     uses: actions/checkout@v3
     with: 
-      repository: SuchByte/Macro-Deck
-      ref: ${{ steps.md_commit_hash.outputs.COMMIT }}
+      repository: Macro-Deck-App/Macro-Deck
+      ref: 'v2.13.0-b4'
       path: macro-deck
 
   - name: Find MD Commit Hash from API Version
