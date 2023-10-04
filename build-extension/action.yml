@@ -59,12 +59,6 @@ runs:
     shell: bash
     run: echo "::error file=ExtensionManifest.json::Invalid manifest! Required attributes [version, type, packageId, target-plugin-api-version]" && exit 1
 
-  - uses: actions-ecosystem/action-add-labels@v1.1.0
-    if: failure() && steps.validate_extension_manifest.outcome == 'failure'
-    with:
-      github_token: ${{ secrets.PAT }}
-      labels: invalid-manifest
-
   - name: Checkout Macro Deck Repository
     uses: actions/checkout@v3
     with: 
@@ -217,15 +211,3 @@ runs:
     run: |
       echo "artifact-path=${{ inputs.artifact-name }}.zip" >> $GITHUB_OUTPUT
       echo "  ${{ env.manifest }}" >> $GITHUB_OUTPUT
-
-  - uses: actions-ecosystem/action-add-labels@v1
-    if: failure() && (steps.build_plugin.outcome == 'failure' || steps.icon_pack_build.outcome == 'failure')
-    with:
-      github_token: ${{ secrets.PAT }}
-      labels: build-failed
-
-  - uses: actions-ecosystem/action-add-labels@v1
-    if: failure() && steps.plugin_test.outcome == 'failure'
-    with:
-      github_token: ${{ secrets.PAT }}
-      labels: tests-failed
