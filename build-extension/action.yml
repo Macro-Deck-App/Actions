@@ -26,9 +26,6 @@ runs:
     shell: bash
     run: sudo apt-get install -y xmlstarlet dos2unix
 
-  - name: "Checkout Extension Repository"
-    uses: actions/checkout@v3
-
   - name: Extract Extension Info
     id: extension_info
     shell: bash
@@ -206,4 +203,4 @@ runs:
     run: |
       echo "artifact-name=${{ fromJSON(env.manifest).packageId }}" >> $GITHUB_OUTPUT
       echo "artifact-path=${{ fromJSON(env.manifest).packageId }}-${{ fromJSON(env.manifest).version }}.zip" >> $GITHUB_OUTPUT
-      echo "manifest=${{ env.manifest }}" >> $GITHUB_OUTPUT
+      echo "  ${{ env.manifest }}" >> $GITHUB_OUTPUT
