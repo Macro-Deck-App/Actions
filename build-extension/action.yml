@@ -175,9 +175,7 @@ runs:
       cp ./${{ inputs.extension-path }}/LICENSE ./dist 2>/dev/null || true
 
   - name: "[Icon Pack] Validate Contents"
-    if: | 
-      (fromJSON(env.manifest).type == 'IconPack' || fromJSON(env.manifest).type == 1) &&
-      hashFiles('./${{ inputs.extension-path }}/*.gif', './${{ inputs.extension-path }}/*.png', './${{ inputs.extension-path }}/*.jpg') == ''
+    if: (fromJSON(env.manifest).type == 'IconPack' || fromJSON(env.manifest).type == 1) && hashFiles('./${{ inputs.extension-path }}/*.gif', './${{ inputs.extension-path }}/*.png', './${{ inputs.extension-path }}/*.jpg') == ''
     id: icon_pack_build
     shell: bash
     run: | 
