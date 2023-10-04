@@ -91,15 +91,15 @@ runs:
 
   - name: "[Plugin] Remove Pre Build Targets"
     if: fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0
-    working-directory: ./macro-deck
+    working-directory: ./macro-deck/MacroDeck
     shell: bash
     run : |
-      xmlstarlet ed -P -L --delete '//Target[@Name="PreBuild"]' *.csproj 2>/dev/null || true
-      xmlstarlet ed -P -L --delete '//Target[@Name="PostBuild"]' *.csproj 2>/dev/null || true
+      xmlstarlet ed -P -L --delete '//Target[@Name="PreBuild"]' *.csproj
+      xmlstarlet ed -P -L --delete '//Target[@Name="PostBuild"]' *.csproj
 
   - name: "[Plugin] Remove COM Reference"
     if: fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0
-    working-directory: ./macro-deck
+    working-directory: ./macro-deck/MacroDeck
     shell: bash
     run: dotnet remove reference NetFwTypeLib
 
