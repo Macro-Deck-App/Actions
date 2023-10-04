@@ -38,14 +38,14 @@ runs:
   - name: Print Extension Info
     shell: bash
     run: |
-    echo "[Extension Info Values]"
-    echo "Version                  : ${{ fromJSON(env.manifest).version }}"
-    echo "Type                     : ${{ fromJSON(env.manifest).type }}"
-    echo "Package ID               : ${{ fromJSON(env.manifest).packageId }}"
-    echo "GitHub Repository        : ${{ fromJSON(env.manifest).repository }}"
-    echo "Name                     : ${{ fromJSON(env.manifest).name }}"
-    echo "Author                   : ${{ fromJSON(env.manifest).author }}"
-    echo "Target Plugin API Version: ${{ fromJSON(env.manifest).target-plugin-api-version }}"
+      echo "[Extension Info Values]"
+      echo "Version                  : ${{ fromJSON(env.manifest).version }}"
+      echo "Type                     : ${{ fromJSON(env.manifest).type }}"
+      echo "Package ID               : ${{ fromJSON(env.manifest).packageId }}"
+      echo "GitHub Repository        : ${{ fromJSON(env.manifest).repository }}"
+      echo "Name                     : ${{ fromJSON(env.manifest).name }}"
+      echo "Author                   : ${{ fromJSON(env.manifest).author }}"
+      echo "Target Plugin API Version: ${{ fromJSON(env.manifest).target-plugin-api-version }}"
 
   - name: Validate Extension Info
     if: |
