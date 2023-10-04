@@ -9,14 +9,6 @@ inputs:
     description: 'Name for the uploaded artifact'
     required: true
     
-outputs:
-  artifact-path:
-    description: "Artifact path to use int he download-artifact action in order to get the distributable file"
-    value: ${{ steps.set-outputs.outputs.artifact-path }}
-  manifest:
-    description: "ExtensionManifest as JSON"
-    value: ${{ steps.set-outputs.outputs.manifest }}
-
 runs:
   using: "composite"
   
@@ -195,10 +187,3 @@ runs:
       path: ./${{ inputs.artifact-name }}.zip
       name: ${{ inputs.artifact-name }}
       if-no-files-found: error
-      
-  - name: Set Outputs
-    id: set-outputs
-    shell: bash
-    run: |
-      echo "artifact-path=${{ inputs.artifact-name }}.zip" >> $GITHUB_OUTPUT
-      echo "  ${{ env.manifest }}" >> $GITHUB_OUTPUT
