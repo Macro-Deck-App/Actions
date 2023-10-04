@@ -174,13 +174,6 @@ runs:
       cp ./${{ inputs.extension-path }}/README.md ./dist 2>/dev/null || true
       cp ./${{ inputs.extension-path }}/LICENSE ./dist 2>/dev/null || true
 
-  - name: "[Icon Pack] Validate Contents"
-    if: (fromJSON(env.manifest).type == 'IconPack' || fromJSON(env.manifest).type == 1) && hashFiles('./${{ inputs.extension-path }}/*.gif', './${{ inputs.extension-path }}/*.png', './${{ inputs.extension-path }}/*.jpg') == ''
-    id: icon_pack_build
-    shell: bash
-    run: | 
-      echo "::error::No valid icons found" && exit 1
-
   - name: "[Icon Pack] Stage Distributable"
     if: fromJSON(env.manifest).type == 'IconPack' || fromJSON(env.manifest).type == 1
     shell: bash
