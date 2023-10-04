@@ -46,17 +46,6 @@ runs:
       cat "./plugin/ExtensionManifest.json" | dos2unix | perl -pe 'chomp if eof' >> $GITHUB_ENV
       echo -e "\n${delim}" >> $GITHUB_ENV
 
-  - name: Debug Extension Info
-    shell: bash
-    run: |
-      echo "[Extension Info Values]"
-      echo "Type                     : ${{ fromJSON(env.manifest).type }}"
-      echo "Name                     : ${{ fromJSON(env.manifest).name }}"
-      echo "Author                   : ${{ fromJSON(env.manifest).author }}"
-      echo "GitHub Repository        : ${{ fromJSON(env.manifest).repository }}"
-      echo "Package ID               : ${{ fromJSON(env.manifest).packageId }}"
-      echo "Version                  : ${{ fromJSON(env.manifest).version }}"
-
   - name: Validate Extension Info
     if: |
       fromJSON(env.manifest).type == '' || 
@@ -72,6 +61,7 @@ runs:
       echo "Version                  : ${{ fromJSON(env.manifest).version }}"
       echo "Type                     : ${{ fromJSON(env.manifest).type }}"
       echo "Package ID               : ${{ fromJSON(env.manifest).packageId }}"
+      echo "GitHub Repository        : ${{ fromJSON(env.manifest).repository }}"
       echo "Target Plugin API Version: ${{ fromJSON(env.manifest).target-plugin-api-version }}"
       echo "::error file=ExtensionManifest.json::Invalid manifest! Required attributes [version, type, packageId, target-plugin-api-version]" && exit 1
 
