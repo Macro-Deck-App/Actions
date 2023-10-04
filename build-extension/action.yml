@@ -2,10 +2,6 @@ name: 'Build Macro Deck Extension'
 description: 'Build a Macro Deck Extension from source'
 
 inputs:
-  upsert-release:
-    description: "['true'|'false'] Whether this action should upload the buildable to a release with the same tag name, creating one if it doesn't exist"
-    required: true
-    default: ''
   ext-repo:
     description: 'Same as action/checkout repository property: Repository name with owner. For example, actions/checkout'
     required: false
@@ -22,6 +18,9 @@ outputs:
   artifact-path:
     description: "Artifact path to use int he download-artifact action in order to get the distributable file"
     value: ${{ steps.set-outputs.outputs.artifact-path }}
+  manifest:
+    description: "ExtensionManifest as JSON"
+    value: ${{ steps.set-outputs.outputs.manifest }}
 
 runs:
   using: "composite"
@@ -47,9 +46,23 @@ runs:
       cat "./plugin/ExtensionManifest.json" | dos2unix | perl -pe 'chomp if eof' >> $GITHUB_ENV
       echo -e "\n${delim}" >> $GITHUB_ENV
 
+  - name: Debug Extension Info
+    shell: bash
+    run: |
+      echo "[Extension Info Values]"
+      echo "Type                     : ${{ fromJSON(env.manifest).type }}"
+      echo "Name                     : ${{ fromJSON(env.manifest).name }}"
+      echo "Author                   : ${{ fromJSON(env.manifest).author }}"
+      echo "GitHub Repository        : ${{ fromJSON(env.manifest).repository }}"
+      echo "Package ID               : ${{ fromJSON(env.manifest).packageId }}"
+      echo "Version                  : ${{ fromJSON(env.manifest).version }}"
+
   - name: Validate Extension Info
     if: |
       fromJSON(env.manifest).type == '' || 
+      fromJSON(env.manifest).name == '' || 
+      fromJSON(env.manifest).author == '' || 
+      fromJSON(env.manifest).repository == '' || 
       fromJSON(env.manifest).packageId == '' || 
       fromJSON(env.manifest).version == '' ||
       fromJSON(env.manifest).target-plugin-api-version == ''
@@ -211,16 +224,4 @@ runs:
     run: |
       echo "artifact-name=${{ fromJSON(env.manifest).packageId }}" >> $GITHUB_OUTPUT
       echo "artifact-path=${{ fromJSON(env.manifest).packageId }}-${{ fromJSON(env.manifest).version }}.zip" >> $GITHUB_OUTPUT
-
-  - name: Create/Update Release
-    if: inputs.upsert-release == 'true'
-    uses: ncipollo/release-action@v1
-    with:
-      allowUpdates: true
-      artifactErrorsFailBuild: false
-      artifacts: './${{ fromJSON(env.manifest).packageId }}-${{ fromJSON(env.manifest).version }}.zip'
-      commit: ${{ github.sha }}
-      generateReleaseNotes: true
-      makeLatest: true
-      replacesArtifacts: true
-      tag: ${{ fromJSON(env.manifest).version }}
+      echo "manifest=${{ env.manifest }}"
