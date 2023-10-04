@@ -4,13 +4,12 @@ description: 'Build a Macro Deck Extension from source'
 inputs:
   extension-path:
     description: 'Path of the extension'
-    required: false
-    default: ''
+    required: true
+  artifact-name:
+    description: 'Name for the uploaded artifact'
+    required: true
     
 outputs:
-  artifact-name:
-    description: "Artifact name to use in the download-artifact action in order to get the distributable file"
-    value: ${{ steps.set-outputs.outputs.artifact-name }}
   artifact-path:
     description: "Artifact path to use int he download-artifact action in order to get the distributable file"
     value: ${{ steps.set-outputs.outputs.artifact-path }}
@@ -48,6 +47,7 @@ runs:
       echo "Target Plugin API Version: ${{ fromJSON(env.manifest).target-plugin-api-version }}"
 
   - name: Validate Extension Info
+    id: validate_extension_manifest
     if: |
       fromJSON(env.manifest).type == '' || 
       fromJSON(env.manifest).name == '' || 
@@ -58,6 +58,11 @@ runs:
       fromJSON(env.manifest).target-plugin-api-version == ''
     shell: bash
     run: echo "::error file=ExtensionManifest.json::Invalid manifest! Required attributes [version, type, packageId, target-plugin-api-version]" && exit 1
+
+  - uses: actions-ecosystem/action-add-labels@v1
+    if: failure() && steps.validate_extension_manifest.outcome == 'failure'
+    with:
+      labels: invalid-manifest
 
   - name: Checkout Macro Deck Repository
     uses: actions/checkout@v3
@@ -148,12 +153,14 @@ runs:
 
   - name: "[Plugin] Build Plugin"
     if: fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0
+    id: build_plugin
     working-directory: ./${{ inputs.extension-path }}
     shell: bash
     run: dotnet build "$(ls *.csproj | head -n1)" --configuration release --no-restore /p:EnableWindowsTargeting=true --output ./output
 
   - name: "[Plugin] Test"
     if: fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0
+    id: plugin_test
     working-directory: ./${{ inputs.extension-path }}
     shell: bash
     run: dotnet test "$(ls *.csproj | head -n1)" --no-build --verbosity normal
@@ -176,6 +183,7 @@ runs:
     if: | 
       (fromJSON(env.manifest).type == 'IconPack' || fromJSON(env.manifest).type == 1) &&
       hashFiles('./${{ inputs.extension-path }}/*.gif', './${{ inputs.extension-path }}/*.png', './${{ inputs.extension-path }}/*.jpg') == ''
+    id: icon_pack_build
     shell: bash
     run: | 
       echo "::error::No valid icons found" && exit 1
@@ -193,19 +201,28 @@ runs:
     shell: bash
     run: |
       cd ./dist
-      zip -r ../${{ fromJSON(env.manifest).packageId }}-${{ fromJSON(env.manifest).version }}.zip . -i *
+      zip -r ../${{ inputs.artifact-name }}.zip . -i *
 
   - name: Upload a Build Artifact
     uses: actions/upload-artifact@v3.1.1
     with:
-      path: ./${{ fromJSON(env.manifest).packageId }}-${{ fromJSON(env.manifest).version }}.zip
-      name: ${{ fromJSON(env.manifest).packageId }}
+      path: ./${{ inputs.artifact-name }}.zip
+      name: ${{ inputs.artifact-name }}
       if-no-files-found: error
       
   - name: Set Outputs
     id: set-outputs
     shell: bash
     run: |
-      echo "artifact-name=${{ fromJSON(env.manifest).packageId }}" >> $GITHUB_OUTPUT
-      echo "artifact-path=${{ fromJSON(env.manifest).packageId }}-${{ fromJSON(env.manifest).version }}.zip" >> $GITHUB_OUTPUT
+      echo "artifact-path=${{ inputs.artifact-name }}.zip" >> $GITHUB_OUTPUT
       echo "  ${{ env.manifest }}" >> $GITHUB_OUTPUT
+
+  - uses: actions-ecosystem/action-add-labels@v1
+    if: failure() && (steps.build_plugin.outcome == 'failure' || steps.icon_pack_build.outcome == 'failure')
+    with:
+      labels: build-failed
+
+  - uses: actions-ecosystem/action-add-labels@v1
+    if: failure() && steps.plugin_test.outcome == 'failure'
+    with:
+      labels: tests-failed
