@@ -13,6 +13,7 @@ runs:
   using: "composite"
   steps:
     - name: Upload built files
+      shell: bash
       id: upload-build-files
       run: |
         curl --fail-with-body -o "./upload-response.json" -X POST \
@@ -26,6 +27,7 @@ runs:
         echo "response=$(cat "./upload-response.json")" >> $GITHUB_OUTPUT
       
     - name: Check upload response
+      shell: bash
       if: |
         fromJSON(steps.upload-build-files.outputs.response).success == false &&
         fromJSON(steps.upload-build-files.outputs.response).errorCode != 4
