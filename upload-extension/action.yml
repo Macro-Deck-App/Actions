@@ -21,7 +21,7 @@ runs:
           -H 'accept: */*' \
           -H "x-admin-token: ${{ inputs.api-token }}" \
           -H 'Content-Type: multipart/form-data' \
-          -F 'file=${{ inputs.extension-path }};type=application/x-zip-compressed' || true
+          -F 'file=@${{ inputs.extension-path }};type=application/x-zip-compressed' || true
         response=$(cat "./upload-response.json")
         echo -e "Response:\n$response"
         echo "response=$(cat "./upload-response.json")" >> $GITHUB_OUTPUT
