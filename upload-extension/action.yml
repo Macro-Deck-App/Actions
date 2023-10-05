@@ -1,0 +1,33 @@
+name: 'Upload Macro Deck Extension'
+description: 'Upload a Macro Deck Extension to the Extension Store'
+
+inputs:
+  extension-path:
+    description: 'Path of the extension'
+    required: true
+  api-token:
+    description: 'Authentication token'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Upload built files
+      id: upload-build-files
+      run: |
+        curl --fail-with-body -o "./upload-response.json" -X POST \
+          'https://extensionstore.api.macro-deck.app/rest/files/upload' \
+          -H 'accept: */*' \
+          -H "x-admin-token: ${{ inputs.api-token }}" \
+          -H 'Content-Type: multipart/form-data' \
+          -F 'file=${{ inputs.extension-path }};type=application/x-zip-compressed' || true
+        response=$(cat "./upload-response.json")
+        echo -e "Response:\n$response"
+        echo "response=$(cat "./upload-response.json")" >> $GITHUB_OUTPUT
+      
+    - name: Check upload response
+      if: |
+        fromJSON(steps.upload-build-files.outputs.response).success == false &&
+        fromJSON(steps.upload-build-files.outputs.response).errorCode != 4
+      run: |
+        echo "::error ::Failed to upload files to build server. Response: ${{ steps.upload-build-files.outputs.response }}" && exit 1
