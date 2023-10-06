@@ -1,0 +1,91 @@
+name: 'Notify Macro Deck Extension'
+description: 'Notify a Macro Deck Extension update in Discord'
+
+inputs:
+  upload-response:
+    description: 'Response of the upload'
+    required: true
+  bot-token:
+    description: 'Token for the Discord Bot'
+    required: true
+    
+runs:
+  using: "composite"
+  steps:
+    - name: Notify new plugin
+      if: fromJSON(inputs.upload-response).newPlugin == true
+      env:
+        UPLOAD_RESPONSE: ${{ fromJSON(inputs.upload-response) }}
+        BOT_TOKEN: ${{ inputs.bot-token }}
+      run: |
+        payload='{
+          "toEveryone" : false,
+          "embed" : {
+            "color" : {
+              "r":0,
+              "g":1,
+              "b":0
+            },
+            "title": "🎉 ${{ env.UPLOAD_RESPONSE.name }} is now available in the Extension Store",
+            "fields" : [
+              {
+                "name": "Description",
+                "value": "${{ env.UPLOAD_RESPONSE.description }}",
+                "inline": false
+              },
+              {
+                "name": "Author",
+                "value": "${{ env.UPLOAD_RESPONSE.author }}",
+                "inline": false
+              },
+              {
+                "name": "Repository URL",
+                "value": "${{ env.UPLOAD_RESPONSE.repository }}",
+                "inline": false
+              }
+            ]
+          }
+        }'
+        curl --fail-with-body -o "./bot-notify-response.json" -X POST \
+          'https://bot.api.macro-deck.app/webhook/extension-store' \
+          -H 'accept: */*' \
+          -H "Authorization: ${{ env.BOT_TOKEN }}" \
+          -H 'Content-Type: application/json' \
+          -d "$payload" || cat "./bot-notify-response.json"
+
+
+    - name: Notify update plugin
+      if: fromJSON(inputs.upload-response).newPlugin == false
+      env:
+        UPLOAD_RESPONSE: ${{ fromJSON(inputs.upload-response) }}
+        BOT_TOKEN: ${{ inputs.bot-token }}
+      run: |
+        payload='{
+          "toEveryone" : false,
+          "embed" : {
+            "color" : {
+              "r":0,
+              "g":1,
+              "b":1
+            },
+            "title": "🚀 ${{ env.UPLOAD_RESPONSE.name }} was updated",
+            "fields" : [
+              {
+                "name": "Version",
+                "value": "${{ env.UPLOAD_RESPONSE.currentVersion }} -> ${{ env.UPLOAD_RESPONSE.newVersion }}",
+                "inline": false
+              },
+              {
+                "name": "Repository URL",
+                "value": "${{ env.UPLOAD_RESPONSE.currentVersion.repository }}",
+                "inline": false
+              }
+            ]
+          }
+        }'
+        curl --fail-with-body -o "./bot-notify-response.json" -X POST \
+          'https://bot.api.macro-deck.app/webhook/extension-store' \
+          -H 'accept: */*' \
+          -H "Authorization: ${{ env.BOT_TOKEN }}" \
+          -H 'Content-Type: application/json' \
+          -d "$payload" || cat "./bot-notify-response.json"
