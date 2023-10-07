@@ -9,10 +9,14 @@ inputs:
     description: 'Authentication token'
     required: true
 
+outputs:
+  response:
+    value: ${{ steps.upload-build-files.outputs.response }}
+
 runs:
   using: "composite"
   steps:
-    - name: Upload built files
+    - name: Upload build files
       shell: bash
       id: upload-build-files
       run: |
