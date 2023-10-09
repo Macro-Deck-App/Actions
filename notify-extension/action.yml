@@ -17,6 +17,7 @@ runs:
       env:
         UPLOAD_RESPONSE: ${{ fromJSON(inputs.upload-response) }}
         BOT_TOKEN: ${{ inputs.bot-token }}
+      shell: bash
       run: |
         payload='{
           "toEveryone" : false,
@@ -59,6 +60,7 @@ runs:
       env:
         UPLOAD_RESPONSE: ${{ fromJSON(inputs.upload-response) }}
         BOT_TOKEN: ${{ inputs.bot-token }}
+      shell: bash
       run: |
         payload='{
           "toEveryone" : false,
