@@ -15,7 +15,6 @@ runs:
     - name: Notify new plugin
       if: fromJSON(inputs.upload-response).newPlugin == true
       env:
-        UPLOAD_RESPONSE: ${{ fromJSON(inputs.upload-response) }}
         BOT_TOKEN: ${{ inputs.bot-token }}
       shell: bash
       run: |
@@ -27,21 +26,21 @@ runs:
               "g":1,
               "b":0
             },
-            "title": "🎉 ${{ env.UPLOAD_RESPONSE.name }} is now available in the Extension Store",
+            "title": "🎉 ${{ fromJSON(inputs.upload-response).name }} is now available in the Extension Store",
             "fields" : [
               {
                 "name": "Description",
-                "value": "${{ env.UPLOAD_RESPONSE.description }}",
+                "value": "${{ fromJSON(inputs.upload-response).description }}",
                 "inline": false
               },
               {
                 "name": "Author",
-                "value": "${{ env.UPLOAD_RESPONSE.author }}",
+                "value": "${{ fromJSON(inputs.upload-response).author }}",
                 "inline": false
               },
               {
                 "name": "Repository URL",
-                "value": "${{ env.UPLOAD_RESPONSE.repository }}",
+                "value": "${{ fromJSON(inputs.upload-response).repository }}",
                 "inline": false
               }
             ]
@@ -50,7 +49,7 @@ runs:
         curl --fail-with-body -o "./bot-notify-response.json" -X POST \
           'https://bot.api.macro-deck.app/webhook/extension-store' \
           -H 'accept: */*' \
-          -H "Authorization: ${{ env.BOT_TOKEN }}" \
+          -H "Authorization: Bearer ${{ env.BOT_TOKEN }}" \
           -H 'Content-Type: application/json' \
           -d "$payload" || cat "./bot-notify-response.json"
 
@@ -58,7 +57,6 @@ runs:
     - name: Notify update plugin
       if: fromJSON(inputs.upload-response).newPlugin == false
       env:
-        UPLOAD_RESPONSE: ${{ fromJSON(inputs.upload-response) }}
         BOT_TOKEN: ${{ inputs.bot-token }}
       shell: bash
       run: |
@@ -70,16 +68,16 @@ runs:
               "g":1,
               "b":1
             },
-            "title": "🚀 ${{ env.UPLOAD_RESPONSE.name }} was updated",
+            "title": "🚀 ${{ fromJSON(inputs.upload-response).name }} was updated",
             "fields" : [
               {
                 "name": "Version",
-                "value": "${{ env.UPLOAD_RESPONSE.currentVersion }} -> ${{ env.UPLOAD_RESPONSE.newVersion }}",
+                "value": "${{ fromJSON(inputs.upload-response).currentVersion }} -> ${{ fromJSON(inputs.upload-response).newVersion }}",
                 "inline": false
               },
               {
                 "name": "Repository URL",
-                "value": "${{ env.UPLOAD_RESPONSE.currentVersion.repository }}",
+                "value": "${{ fromJSON(inputs.upload-response).currentVersion.repository }}",
                 "inline": false
               }
             ]
@@ -88,6 +86,6 @@ runs:
         curl --fail-with-body -o "./bot-notify-response.json" -X POST \
           'https://bot.api.macro-deck.app/webhook/extension-store' \
           -H 'accept: */*' \
-          -H "Authorization: ${{ env.BOT_TOKEN }}" \
+          -H "Authorization: Bearer ${{ env.BOT_TOKEN }}" \
           -H 'Content-Type: application/json' \
           -d "$payload" || cat "./bot-notify-response.json"
