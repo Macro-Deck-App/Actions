@@ -8,6 +8,10 @@ inputs:
   artifact-name:
     description: 'Name for the uploaded artifact'
     required: true
+
+outputs:
+  error-code:
+    value: ${{ steps.set_error_code.outputs.value }}
     
 runs:
   using: "composite"
@@ -37,6 +41,7 @@ runs:
       echo "Name                     : ${{ fromJSON(env.manifest).name }}"
       echo "Author                   : ${{ fromJSON(env.manifest).author }}"
       echo "Target Plugin API Version: ${{ fromJSON(env.manifest).target-plugin-api-version }}"
+      echo "Target Macro Deck Version: ${{ fromJSON(env.manifest).target-plugin-macro-deck-version }}"
 
   - name: Validate Extension Info
     id: validate_extension_manifest
@@ -47,9 +52,10 @@ runs:
       fromJSON(env.manifest).repository == '' || 
       fromJSON(env.manifest).packageId == '' || 
       fromJSON(env.manifest).version == '' ||
-      fromJSON(env.manifest).target-plugin-api-version == ''
+      fromJSON(env.manifest).target-plugin-api-version == '' || 
+      fromJSON(env.manifest).target-plugin-macro-deck-version == ''
     shell: bash
-    run: echo "::error file=ExtensionManifest.json::Invalid manifest! Required attributes [version, type, packageId, target-plugin-api-version]" && exit 1
+    run: echo "::error file=ExtensionManifest.json::Invalid manifest! Required attributes [version, type, packageId, target-plugin-api-version, target-macro-deck-version]" && exit 1
 
   - name: Checkout Macro Deck Repository
     uses: actions/checkout@v3
@@ -77,8 +83,6 @@ runs:
     uses: actions/setup-dotnet@v3
     with:
       dotnet-version: |
-        3.1.x
-        6.0.x
         7.0.x
 
   - name: "[Plugin] Remove Pre Build Targets"
@@ -187,3 +191,16 @@ runs:
       path: ./${{ inputs.artifact-name }}.zip
       name: ${{ inputs.artifact-name }}
       if-no-files-found: error
+
+  - name: Set error code
+    id: set_error_code
+    if: failure()
+    shell: bash
+    run: |
+      if [ ${{ steps.validate_extension_manifest.outcome }} = "failure" ]; then
+        echo "-1000"
+      else if [ ${{ steps.build_plugin.outcome }} = "failure" ]; then
+        echo "-2000"
+      else if [ ${{ steps.plugin_test.outcome }} = "failure" ]; then
+          echo "-3000"
+      fi
