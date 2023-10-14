@@ -61,7 +61,7 @@ runs:
     uses: actions/checkout@v3
     with: 
       repository: Macro-Deck-App/Macro-Deck
-      ref: 'v2.13.0-b4'
+      ref: "v${{fromJSON(env.manifest).target-macro-deck-version}}"
       path: macro-deck
 
   - name: Find MD Commit Hash from API Version
