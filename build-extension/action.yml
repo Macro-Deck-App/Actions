@@ -41,7 +41,7 @@ runs:
       echo "Name                     : ${{ fromJSON(env.manifest).name }}"
       echo "Author                   : ${{ fromJSON(env.manifest).author }}"
       echo "Target Plugin API Version: ${{ fromJSON(env.manifest).target-plugin-api-version }}"
-      echo "Target Macro Deck Version: ${{ fromJSON(env.manifest).target-plugin-macro-deck-version }}"
+      echo "Target Macro Deck Version: ${{ fromJSON(env.manifest).target-macro-deck-version }}"
 
   - name: Validate Extension Info
     id: validate_extension_manifest
@@ -53,7 +53,7 @@ runs:
       fromJSON(env.manifest).packageId == '' || 
       fromJSON(env.manifest).version == '' ||
       fromJSON(env.manifest).target-plugin-api-version == '' || 
-      fromJSON(env.manifest).target-plugin-macro-deck-version == ''
+      fromJSON(env.manifest).target-macro-deck-version == ''
     shell: bash
     run: echo "::error file=ExtensionManifest.json::Invalid manifest! Required attributes [version, type, packageId, target-plugin-api-version, target-macro-deck-version]" && exit 1
 
