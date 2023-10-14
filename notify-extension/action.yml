@@ -77,7 +77,7 @@ runs:
               },
               {
                 "name": "Repository URL",
-                "value": "${{ fromJSON(inputs.upload-response).currentVersion.repository }}",
+                "value": "${{ fromJSON(inputs.upload-response).repository }}",
                 "inline": false
               }
             ]
