@@ -57,14 +57,23 @@ runs:
     shell: bash
     run: echo "::error file=ExtensionManifest.json::Invalid manifest! Required attributes [version, type, packageId, target-plugin-api-version, target-macro-deck-version]" && exit 1
 
+  - name: Cache Macro Deck
+    id: cache-macro-deck
+    uses: actions/cache@v3
+    with:
+      path: './macro-deck/output/Macro Deck 2.dll'
+      key: macro-deck-fromJSON(env.manifest).target-macro-deck-version
+
   - name: Checkout Macro Deck Repository
-    uses: actions/checkout@v3
+    if: steps.cache-macro-deck.outputs.cache-hit != 'true'
+    uses: actions/checkout@v4
     with: 
       repository: Macro-Deck-App/Macro-Deck
       ref: "v${{fromJSON(env.manifest).target-macro-deck-version}}"
       path: macro-deck
 
   - name: Find MD Commit Hash from API Version
+    if: steps.cache-macro-deck.outputs.cache-hit != 'true'
     id: md_commit_hash
     shell: bash
     working-directory: ./macro-deck
@@ -73,7 +82,7 @@ runs:
       git ls-remote --tags "https://github.com/Macro-Deck-org/Macro-Deck.git" | cut -f 1 | xargs git grep --max-count 1 --name-only -e "PluginApiVersion\s*=\s*${{ fromJSON(env.manifest).target-plugin-api-version }}" | cut -f 1 -d ':' | head -n 1 | echo "COMMIT_HASH=$(cat -)" >> $GITHUB_OUTPUT
 
   - name: Validate MD Commit Hash
-    if: steps.md_commit_hash.outputs.COMMIT_HASH == ''
+    if: steps.cache-macro-deck.outputs.cache-hit != 'true' && steps.md_commit_hash.outputs.COMMIT_HASH == ''
     shell: bash
     run: |
       echo "::error file=ExtensionManifest.json::Unable to find commit for provided Target Plugin API Version ${{ fromJSON(env.manifest).target-plugin-api-version }}" && exit 1
@@ -86,7 +95,7 @@ runs:
         7.0.x
 
   - name: "[Plugin] Remove Pre Build Targets"
-    if: fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0
+    if: steps.cache-macro-deck.outputs.cache-hit != 'true' && (fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0)
     working-directory: ./macro-deck/MacroDeck
     shell: bash
     run : |
@@ -94,19 +103,19 @@ runs:
       xmlstarlet ed -P -L --delete '//Target[@Name="PostBuild"]' *.csproj
 
   - name: "[Plugin] Remove COM Reference"
-    if: fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0
+    if: steps.cache-macro-deck.outputs.cache-hit != 'true' && (fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0)
     working-directory: ./macro-deck/MacroDeck
     shell: bash
     run: dotnet remove reference NetFwTypeLib
 
   - name: "[Plugin] Restore dependencies"
-    if: fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0
+    if: steps.cache-macro-deck.outputs.cache-hit != 'true' && (fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0)
     working-directory: ./macro-deck
     shell: bash
     run: dotnet restore -property:EnableWindowsTargeting=true
 
   - name: "[Plugin] Build Macro Deck"
-    if: fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0
+    if: steps.cache-macro-deck.outputs.cache-hit != 'true' && (fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0)
     working-directory: ./macro-deck
     shell: bash
     run: dotnet build --configuration release --no-restore -property:EnableWindowsTargeting=true -property:SignAssembly=false --output ./output
@@ -126,8 +135,8 @@ runs:
     working-directory: ./${{ inputs.extension-path }}
     shell: bash
     run: |
-      zip -0 -r resources.zip Resources/*
-      unzip -LL resources.zip
+      zip -0 -r resources.zip Resources/* || true
+      unzip -LL resources.zip || true
 
   - name: "[Plugin] Move dll into location"
     if: fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0
