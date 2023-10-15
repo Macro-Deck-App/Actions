@@ -26,6 +26,7 @@ runs:
               "g":1,
               "b":0
             },
+            "thumbnailUrl": "https://extensionstore.api.macro-deck.app/rest/v2/extensions/icon/${{ fromJSON(inputs.upload-response).packageId }}",
             "title": "🎉 ${{ fromJSON(inputs.upload-response).name }} is now available in the Extension Store",
             "fields" : [
               {
@@ -68,6 +69,7 @@ runs:
               "g":1,
               "b":1
             },
+            "thumbnailUrl": "https://extensionstore.api.macro-deck.app/rest/v2/extensions/icon/${{ fromJSON(inputs.upload-response).packageId }}",
             "title": "🚀 ${{ fromJSON(inputs.upload-response).name }} was updated",
             "fields" : [
               {
