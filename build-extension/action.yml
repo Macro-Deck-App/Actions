@@ -62,7 +62,7 @@ runs:
     uses: actions/cache@v3
     with:
       path: './macro-deck/output/Macro Deck 2.dll'
-      key: macro-deck-fromJSON(env.manifest).target-macro-deck-version
+      key: macro-deck-${{ fromJSON(env.manifest).target-macro-deck-version }}
 
   - name: Checkout Macro Deck Repository
     if: steps.cache-macro-deck.outputs.cache-hit != 'true'
