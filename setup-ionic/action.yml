@@ -5,10 +5,10 @@ runs:
   using: "composite"
   steps:
     - shell: bash
-      run: >
+      run: |
         npm install -g yarn
-        npm install -g @angular/cli
-        npm install -g @ionic/cli
-        npm install -g @capacitor/core
-        npm install -g @capacitor/cli
+        yarn global add @angular/cli
+        yarn global add @ionic/cli
+        yarn global add @capacitor/core
+        yarn global add @capacitor/cli
         yarn install
