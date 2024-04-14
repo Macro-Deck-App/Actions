@@ -92,7 +92,7 @@ runs:
     uses: actions/setup-dotnet@v3
     with:
       dotnet-version: |
-        7.0.x
+        8.0.x
 
   - name: "[Plugin] Remove Pre Build Targets"
     if: steps.cache-macro-deck.outputs.cache-hit != 'true' && (fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0)
@@ -118,7 +118,13 @@ runs:
     if: steps.cache-macro-deck.outputs.cache-hit != 'true' && (fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0)
     working-directory: ./macro-deck
     shell: bash
-    run: dotnet build --configuration release --no-restore -property:EnableWindowsTargeting=true -property:SignAssembly=false --output ./output
+    run: >
+      dotnet build
+      --configuration release
+      --no-restore
+      --property:EnableWindowsTargeting=true
+      --property:SignAssembly=false
+      --output ./output
 
   - name: "[Plugin] Remove Pre Build Targets"
     if: fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0
@@ -156,7 +162,15 @@ runs:
     id: build_plugin
     working-directory: ./${{ inputs.extension-path }}
     shell: bash
-    run: dotnet build "$(ls *.csproj | head -n1)" --configuration release --no-restore /p:EnableWindowsTargeting=true --output ./output
+    run: >
+      dotnet build "$(ls *.csproj | head -n1)"
+      --configuration release
+      --no-restore
+      --property:EnableWindowsTargeting=true
+      --property:SignAssembly=false
+      --property:IncludeSourceRevisionInInformationalVersion=false
+      --property:CopyLocalLockFileAssemblies=true
+      --output ./output
 
   - name: "[Plugin] Test"
     if: fromJSON(env.manifest).type == 'Plugin' || fromJSON(env.manifest).type == 0
